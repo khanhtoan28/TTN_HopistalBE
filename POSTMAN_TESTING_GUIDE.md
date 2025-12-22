@@ -29,6 +29,28 @@ Các biến môi trường có sẵn:
 
 ## 3. Các API Endpoints
 
+### Authentication
+
+#### 1. **Login**
+- **Method**: `POST`
+- **URL**: `{{base_url}}/api/v1/auth/login`
+- **Headers**: 
+  - `Content-Type: application/json`
+- **Body** (JSON):
+```json
+{
+    "username": "testuser123",
+    "password": "password123"
+}
+```
+- **Description**: Đăng nhập và lấy JWT token
+- **Response**: 
+  - `userId`: ID của user
+  - `username`: Tên đăng nhập
+  - `typeToken`: Loại token (Bearer)
+  - `accessToken`: JWT token để sử dụng cho các request khác
+- **Note**: Token sẽ tự động được lưu vào biến `jwt_token` trong environment sau khi login thành công
+
 ### Users Management
 
 #### 1. **Get All Users**
@@ -160,12 +182,13 @@ Tất cả API responses đều có format:
 
 ## 6. Testing Flow
 
-### Flow 1: CRUD User
-1. **Create User** → Lưu `user_id` từ response
-2. **Get User By ID** → Kiểm tra user vừa tạo
-3. **Update User** → Cập nhật thông tin
-4. **Get All Users** → Xem danh sách users
-5. **Delete User** → Xóa user
+### Flow 1: Login và CRUD User
+1. **Login** → Lấy JWT token (token tự động được lưu vào `jwt_token`)
+2. **Create User** → Tạo user mới (lưu `user_id` từ response)
+3. **Get User By ID** → Kiểm tra user vừa tạo
+4. **Update User** → Cập nhật thông tin
+5. **Get All Users** → Xem danh sách users
+6. **Delete User** → Xóa user
 
 ### Flow 2: Lock/Unlock User
 1. **Get User By ID** → Lấy thông tin user

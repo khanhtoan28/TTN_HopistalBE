@@ -3,7 +3,6 @@ package com.example.tw_thainguyen.service.impl;
 import com.example.tw_thainguyen.exception.BadRequestException;
 import com.example.tw_thainguyen.model.dto.UserLoginRequestDTO;
 import com.example.tw_thainguyen.model.dto.UserLoginResponseDTO;
-import com.example.tw_thainguyen.repository.UserRepository;
 import com.example.tw_thainguyen.security.UserPrinciple;
 import com.example.tw_thainguyen.security.jwt.JwtProvider;
 import com.example.tw_thainguyen.service.AuthService;
@@ -12,7 +11,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,17 +19,11 @@ public class AuthServiceImpl implements AuthService {
     
     private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     
     public AuthServiceImpl(AuthenticationManager authenticationManager,
-                           JwtProvider jwtProvider,
-                           UserRepository userRepository,
-                           PasswordEncoder passwordEncoder) {
+                           JwtProvider jwtProvider) {
         this.authenticationManager = authenticationManager;
         this.jwtProvider = jwtProvider;
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
     }
     
     @Override
