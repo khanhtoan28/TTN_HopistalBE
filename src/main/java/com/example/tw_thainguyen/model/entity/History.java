@@ -26,11 +26,11 @@ public class History {
     private String period;
 
     @Column(name = "description ", nullable = false, length = 1000)
-    private String description ;
+    private String description;
 
-    @Column(name = "icon" , length = 255)
-    private String icon ;
+    @Column(name = "icon", length = 255)
+    private String icon;
 
     @Column(name = "image", length = 255)
-    private String image ;
+    private String image;
 }

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * Base Response DTO cho tất cả API responses
+ *
  * @param <T> Data type
  */
 @Data
@@ -16,12 +17,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BaseResponse<T> {
-    
+
     private boolean success;
     private String message;
     private T data;
     private String error;
-    
+
     /**
      * Tạo success response với data
      */
@@ -31,7 +32,7 @@ public class BaseResponse<T> {
                 .data(data)
                 .build();
     }
-    
+
     /**
      * Tạo success response với data và message
      */
@@ -42,7 +43,7 @@ public class BaseResponse<T> {
                 .data(data)
                 .build();
     }
-    
+
     /**
      * Tạo error response
      */
@@ -52,7 +53,7 @@ public class BaseResponse<T> {
                 .error(error)
                 .build();
     }
-    
+
     /**
      * Tạo error response với message
      */

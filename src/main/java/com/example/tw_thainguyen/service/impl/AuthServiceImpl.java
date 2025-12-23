@@ -16,16 +16,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthServiceImpl implements AuthService {
-    
+
     private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
-    
+
     public AuthServiceImpl(AuthenticationManager authenticationManager,
                            JwtProvider jwtProvider) {
         this.authenticationManager = authenticationManager;
         this.jwtProvider = jwtProvider;
     }
-    
+
     @Override
     @Transactional(readOnly = true)
     public UserLoginResponseDTO login(UserLoginRequestDTO loginRequest) {
@@ -37,25 +37,25 @@ public class AuthServiceImpl implements AuthService {
                             loginRequest.getPassword()
                     )
             );
-            
+
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            
+
             // Get user details
             UserPrinciple userPrinciple = (UserPrinciple) authentication.getPrincipal();
-            
+
             // Check if account is locked
             if (userPrinciple.getUser().getIsLocked()) {
                 throw new BadRequestException("Tài khoản đã bị khóa");
             }
-            
+
             // Check if account is deleted
             if (userPrinciple.getUser().getIsDeleted()) {
                 throw new BadRequestException("Tài khoản đã bị xóa");
             }
-            
+
             // Generate JWT token
             String token = jwtProvider.generateToken(userPrinciple);
-            
+
             // Build response
             return UserLoginResponseDTO.builder()
                     .userId(userPrinciple.getUser().getUserId())
@@ -63,7 +63,7 @@ public class AuthServiceImpl implements AuthService {
                     .typeToken("Bearer")
                     .accessToken(token)
                     .build();
-                    
+
         } catch (BadCredentialsException e) {
             throw new BadRequestException("Tên đăng nhập hoặc mật khẩu không đúng");
         } catch (Exception e) {

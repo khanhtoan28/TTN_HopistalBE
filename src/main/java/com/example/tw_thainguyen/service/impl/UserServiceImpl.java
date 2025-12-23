@@ -15,18 +15,18 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 
 @Service
-public class UserServiceImpl extends BaseServiceImpl<User, Long, UserCreateAccountDTO, UserUpdateDTO, UserResponseDTO> 
+public class UserServiceImpl extends BaseServiceImpl<User, Long, UserCreateAccountDTO, UserUpdateDTO, UserResponseDTO>
         implements UserService {
-    
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    
+
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         super(userRepository);
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
-    
+
     @Override
     protected UserResponseDTO toResponseDTO(User user) {
         return UserResponseDTO.builder()
@@ -41,7 +41,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserCreateAccou
                 .updatedAt(user.getUpdatedAt())
                 .build();
     }
-    
+
     @Override
     protected User toEntity(UserCreateAccountDTO createDTO) {
         return User.builder()
@@ -54,7 +54,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserCreateAccou
                 .isLocked(false)
                 .build();
     }
-    
+
     @Override
     protected void updateEntity(User user, UserUpdateDTO updateDTO) {
         if (updateDTO.getFullname() != null) {
@@ -70,7 +70,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserCreateAccou
             user.setAvatar(updateDTO.getAvatar());
         }
     }
-    
+
     @Override
     @Transactional
     public UserResponseDTO create(UserCreateAccountDTO createDTO) {
@@ -78,49 +78,49 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserCreateAccou
         if (userRepository.existsByUsername(createDTO.getUsername())) {
             throw new ResourceAlreadyExistsException("Người dùng", "tên đăng nhập", createDTO.getUsername());
         }
-        
+
         // Kiểm tra email đã tồn tại
         if (createDTO.getEmail() != null && userRepository.existsByEmail(createDTO.getEmail())) {
             throw new ResourceAlreadyExistsException("Người dùng", "email", createDTO.getEmail());
         }
-        
+
         // Kiểm tra phone đã tồn tại
         if (createDTO.getPhone() != null && userRepository.existsByPhone(createDTO.getPhone())) {
             throw new ResourceAlreadyExistsException("Người dùng", "số điện thoại", createDTO.getPhone());
         }
-        
+
         User user = toEntity(createDTO);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
         return toResponseDTO(savedUser);
     }
-    
+
     @Override
     @Transactional
     public UserResponseDTO update(Long id, UserUpdateDTO updateDTO) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Người dùng", "id", id));
-        
+
         // Kiểm tra email đã tồn tại (nếu thay đổi)
         if (updateDTO.getEmail() != null && !updateDTO.getEmail().equals(user.getEmail())) {
             if (userRepository.existsByEmail(updateDTO.getEmail())) {
                 throw new ResourceAlreadyExistsException("Người dùng", "email", updateDTO.getEmail());
             }
         }
-        
+
         // Kiểm tra phone đã tồn tại (nếu thay đổi)
         if (updateDTO.getPhone() != null && !updateDTO.getPhone().equals(user.getPhone())) {
             if (userRepository.existsByPhone(updateDTO.getPhone())) {
                 throw new ResourceAlreadyExistsException("Người dùng", "số điện thoại", updateDTO.getPhone());
             }
         }
-        
+
         updateEntity(user, updateDTO);
         user.setUpdatedAt(LocalDateTime.now());
         User updatedUser = userRepository.save(user);
         return toResponseDTO(updatedUser);
     }
-    
+
     @Override
     @Transactional
     public void delete(Long id) {
@@ -129,7 +129,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserCreateAccou
         }
         userRepository.deleteById(id);
     }
-    
+
     @Override
     @Transactional
     public UserResponseDTO lockUser(Long id) {
@@ -140,7 +140,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserCreateAccou
         User updatedUser = userRepository.save(user);
         return toResponseDTO(updatedUser);
     }
-    
+
     @Override
     @Transactional
     public UserResponseDTO unlockUser(Long id) {

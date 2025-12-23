@@ -6,7 +6,9 @@ import com.example.tw_thainguyen.repository.TokenRepository;
 import com.example.tw_thainguyen.service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.Date;
+
 @Service
 public class TokenServiceImpl implements TokenService {
 
@@ -20,6 +22,7 @@ public class TokenServiceImpl implements TokenService {
                 .expiryDate(new Date(System.currentTimeMillis() + 86400000))
                 .build());
     }
+
     @Override
     public boolean isTokenInvalidated(String token) {
         return tokenRepository.existsByTokenAndExpiryDateAfter(token, new Date());

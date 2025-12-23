@@ -5,7 +5,8 @@ import org.springframework.data.repository.NoRepositoryBean;
 
 /**
  * Base Repository interface với các method chung
- * @param <T> Entity type
+ *
+ * @param <T>  Entity type
  * @param <ID> ID type
  */
 @NoRepositoryBean
