@@ -12,11 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ArtifactsServiceImpl extends BaseServiceImpl<Artifacts, Long, ArtifactsRequestDTO, ArtifactsRequestDTO, ArtifactsResponseDTO> implements ArtifactsService {
 
-    private final ArtifactsRepository artifactsRepository;
-
     public ArtifactsServiceImpl(ArtifactsRepository artifactsRepository) {
         super(artifactsRepository);
-        this.artifactsRepository = artifactsRepository;
     }
 
     @Override
@@ -54,11 +51,11 @@ public class ArtifactsServiceImpl extends BaseServiceImpl<Artifacts, Long, Artif
     @Override
     @Transactional
     public ArtifactsResponseDTO update(Long id, ArtifactsRequestDTO requestDTO) {
-        Artifacts artifact = artifactsRepository.findById(id)
+        Artifacts artifact = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Hiện vật", "id", id));
 
         updateEntity(artifact, requestDTO);
-        Artifacts updatedArtifact = artifactsRepository.save(artifact);
+        Artifacts updatedArtifact = repository.save(artifact);
         return toResponseDTO(updatedArtifact);
     }
 }

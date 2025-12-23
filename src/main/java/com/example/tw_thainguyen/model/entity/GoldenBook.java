@@ -26,7 +26,7 @@ public class GoldenBook {
     @Column(name = "year", nullable = false)
     private Integer year;
 
-    @Column(name = "department, nullable = false, length = 100")
+    @Column(name = "department", nullable = false, length = 100)
     private String department;
 
     @Column(name = "image", length = 255)

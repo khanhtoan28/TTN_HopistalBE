@@ -1,7 +1,7 @@
 package com.example.tw_thainguyen.security;
 
 import com.example.tw_thainguyen.model.entity.User;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.tw_thainguyen.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -12,8 +12,11 @@ import java.util.Collections;
 @Service
 public class UserDetailService implements UserDetailsService {
 
-    @Autowired
-    private com.example.tw_thainguyen.repository.UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public UserDetailService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

@@ -1,22 +1,20 @@
 package com.example.tw_thainguyen.service.impl;
 
+import com.example.tw_thainguyen.exception.ResourceNotFoundException;
 import com.example.tw_thainguyen.model.dto.GoldenBookRequestDTO;
 import com.example.tw_thainguyen.model.dto.GoldenBookResponseDTO;
 import com.example.tw_thainguyen.model.entity.GoldenBook;
 import com.example.tw_thainguyen.repository.GoldenBookRepository;
-import com.example.tw_thainguyen.service.BaseService;
 import com.example.tw_thainguyen.service.GoldenBookService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class GoldenBookServiceImpl extends BaseServiceImpl<GoldenBook, Long, GoldenBookRequestDTO, GoldenBookRequestDTO, GoldenBookResponseDTO>
         implements GoldenBookService {
 
-    private final GoldenBookRepository goldenBookRepository;
-
     public GoldenBookServiceImpl(GoldenBookRepository goldenBookRepository) {
         super(goldenBookRepository);
-        this.goldenBookRepository = goldenBookRepository;
     }
 
     @Override
@@ -64,5 +62,16 @@ public class GoldenBookServiceImpl extends BaseServiceImpl<GoldenBook, Long, Gol
         if (goldenBookRequestDTO.getDescription() != null) {
             entity.setDescription(goldenBookRequestDTO.getDescription());
         }
+    }
+    
+    @Override
+    @Transactional
+    public GoldenBookResponseDTO update(Long id, GoldenBookRequestDTO requestDTO) {
+        GoldenBook goldenBook = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Sách vàng", "id", id));
+        
+        updateEntity(goldenBook, requestDTO);
+        GoldenBook updatedGoldenBook = repository.save(goldenBook);
+        return toResponseDTO(updatedGoldenBook);
     }
 }

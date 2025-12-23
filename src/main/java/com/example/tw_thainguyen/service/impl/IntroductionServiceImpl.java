@@ -15,11 +15,8 @@ import java.time.LocalDateTime;
 public class IntroductionServiceImpl extends BaseServiceImpl<Introduction, Long, IntroductionRequestDTO, IntroductionRequestDTO, IntroductionResponseDTO>
         implements IntroductionService {
 
-    private final IntroductionRepository introductionRepository;
-
     public IntroductionServiceImpl(IntroductionRepository introductionRepository) {
         super(introductionRepository);
-        this.introductionRepository = introductionRepository;
     }
 
     @Override
@@ -54,12 +51,12 @@ public class IntroductionServiceImpl extends BaseServiceImpl<Introduction, Long,
     @Override
     @Transactional
     public IntroductionResponseDTO update(Long id, IntroductionRequestDTO requestDTO) {
-        Introduction introduction = introductionRepository.findById(id)
+        Introduction introduction = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Giới thiệu", "id", id));
 
         updateEntity(introduction, requestDTO);
         introduction.setUpdatedAt(LocalDateTime.now());
-        Introduction updatedIntroduction = introductionRepository.save(introduction);
+        Introduction updatedIntroduction = repository.save(introduction);
         return toResponseDTO(updatedIntroduction);
     }
 }

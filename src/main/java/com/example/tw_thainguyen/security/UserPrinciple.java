@@ -12,12 +12,12 @@ import java.util.Collection;
 @Getter
 @Setter
 @Builder
-
 public class UserPrinciple implements UserDetails {
-    //Lớp UserPrinciple đóng vai trò làm lớp đại diện cho người dùng khi Spring Security xác thực.
-    // Cung cấp các thông tin của người dùng như tài khoản mật khẩu và trạng thái tài khoản
-    // Ngoài ra thì nó cung cấp quyền
-    // Này để cung cấp thông tin cho security xác thực
+    /**
+     * Lớp UserPrinciple đóng vai trò làm lớp đại diện cho người dùng khi Spring Security xác thực.
+     * Cung cấp các thông tin của người dùng như tài khoản, mật khẩu và trạng thái tài khoản.
+     * Ngoài ra thì nó cung cấp quyền để cung cấp thông tin cho security xác thực.
+     */
     private User user;
     private Collection<? extends GrantedAuthority> authorities;
 

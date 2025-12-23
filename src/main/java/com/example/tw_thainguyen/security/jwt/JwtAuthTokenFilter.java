@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,7 +15,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -27,31 +25,18 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthTokenFilter.class);
 
-    @Autowired
-    private JwtProvider jwtProvider;
+    private final JwtProvider jwtProvider;
+    private final UserDetailService userDetailService;
+    private final TokenService tokenService;
 
-    @Autowired
-    private UserDetailService userDetailService;
-
-    @Autowired
-    private TokenService tokenService;
+    public JwtAuthTokenFilter(JwtProvider jwtProvider, UserDetailService userDetailService, TokenService tokenService) {
+        this.jwtProvider = jwtProvider;
+        this.userDetailService = userDetailService;
+        this.tokenService = tokenService;
+    }
 
     private static final List<String> EXCLUDED_PATHS = Arrays.asList(
-//            "/api/v1/auth/sign-up",
-//            "/api/v1/auth/sign-in",
-//            "/api/v1/categories",
-//            "/api/v1/products/search",
-//            "/api/v1/products",
-//            "/api/v1/products/featured-products",
-//            "/api/v1/products/new-products",
-//            "/api/v1/products/best-seller-products",
-//            "/api/v1/products/categories/**",
-//            "/api/v1/products/**",
-//            "/api/v1/account/forgot-password",
-//            "/api/v1/account/reset-password",
-//            "/api/v1/user/cart/checkout/success",
-//            "/api/v1/user/cart/checkout/cancel",
-//            "/api/v1/paypal/**"
+            "/api/v1/auth/login"
     );
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
@@ -59,9 +44,7 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-        boolean shouldNotFilter = EXCLUDED_PATHS.stream().anyMatch(pattern -> pathMatcher.match(pattern, path));
-        logger.info("Request path: {}, shouldNotFilter: {}", path, shouldNotFilter);
-        return shouldNotFilter;
+        return EXCLUDED_PATHS.stream().anyMatch(pattern -> pathMatcher.match(pattern, path));
     }
 
     @Override

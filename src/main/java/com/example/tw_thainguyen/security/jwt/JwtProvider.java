@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
-import java.util.Collections;
-import java.util.List;
 
 @Component
 public class JwtProvider {
@@ -53,10 +51,5 @@ public class JwtProvider {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
-    }
-
-    public List<String> getRolesFromToken(String token) {
-        // Không còn sử dụng roles nữa, trả về empty list
-        return Collections.emptyList();
     }
 }

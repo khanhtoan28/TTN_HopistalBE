@@ -25,7 +25,7 @@ public class History {
     @Column(name = "period", nullable = false, length = 255)
     private String period;
 
-    @Column(name = "description ", nullable = false, length = 1000)
+    @Column(name = "description", nullable = false, length = 1000)
     private String description;
 
     @Column(name = "icon", length = 255)
