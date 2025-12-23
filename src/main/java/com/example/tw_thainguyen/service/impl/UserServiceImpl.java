@@ -30,7 +30,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserCreateAccou
     @Override
     protected UserResponseDTO toResponseDTO(User user) {
         return UserResponseDTO.builder()
-                .id(user.getId())
+                .id(user.getUserId())
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .phone(user.getPhone())

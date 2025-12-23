@@ -1,7 +1,5 @@
 package com.example.tw_thainguyen.model.dto;
 
-import lombok.Builder;
-import lombok.Setter;
 import lombok.*;
 
 @AllArgsConstructor
@@ -9,7 +7,6 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-
 public class UserLoginResponseDTO {
     private Long userId;
     private String username;

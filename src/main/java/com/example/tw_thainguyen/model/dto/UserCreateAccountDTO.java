@@ -1,7 +1,7 @@
 package com.example.tw_thainguyen.model.dto;
+
 import jakarta.validation.constraints.*;
 import lombok.*;
-
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,6 +19,7 @@ public class UserCreateAccountDTO {
     @Size(min = 6 , max = 100, message = "Mật khẩu phải từ 6 - 100 kí tự")
     private String password;
 
+    @NotBlank(message = "Email không được để trống")
     @Email(message = "Email không đúng định dạng")
     private String email;
 

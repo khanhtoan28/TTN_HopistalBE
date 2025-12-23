@@ -58,7 +58,7 @@ public class AuthServiceImpl implements AuthService {
             
             // Build response
             return UserLoginResponseDTO.builder()
-                    .userId(userPrinciple.getUser().getId())
+                    .userId(userPrinciple.getUser().getUserId())
                     .username(userPrinciple.getUsername())
                     .typeToken("Bearer")
                     .accessToken(token)
