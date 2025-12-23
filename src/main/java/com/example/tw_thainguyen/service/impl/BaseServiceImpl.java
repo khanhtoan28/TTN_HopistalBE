@@ -70,7 +70,7 @@ public abstract class BaseServiceImpl<T, ID, CreateDTO, UpdateDTO, ResponseDTO>
     @Transactional
     public ResponseDTO update(ID id, UpdateDTO updateDTO) {
         T entity = repository.findById(id)
-                .orElseThrow(() -> new com.example.tw_thainguyen.exception.ResourceNotFoundException("Entity", "id", id));
+                .orElseThrow(() -> new com.example.tw_thainguyen.exception.ResourceNotFoundException("Tài nguyên", "id", id));
         updateEntity(entity, updateDTO);
         T updatedEntity = repository.save(entity);
         return toResponseDTO(updatedEntity);
@@ -80,7 +80,7 @@ public abstract class BaseServiceImpl<T, ID, CreateDTO, UpdateDTO, ResponseDTO>
     @Transactional
     public void delete(ID id) {
         if (!repository.existsById(id)) {
-            throw new com.example.tw_thainguyen.exception.ResourceNotFoundException("Entity", "id", id);
+            throw new com.example.tw_thainguyen.exception.ResourceNotFoundException("Tài nguyên", "id", id);
         }
         repository.deleteById(id);
     }

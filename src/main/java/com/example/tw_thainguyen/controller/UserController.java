@@ -50,13 +50,13 @@ public class UserController extends BaseController<User, Long, UserCreateAccount
     @PutMapping("/{id}/lock")
     public ResponseEntity<BaseResponse<UserResponseDTO>> lockUser(@PathVariable Long id) {
         UserResponseDTO data = userService.lockUser(id);
-        return ResponseEntity.ok(BaseResponse.success(data, "User locked successfully"));
+        return ResponseEntity.ok(BaseResponse.success(data, "Tài khoản đã bị khóa thành công"));
     }
     
     @PutMapping("/{id}/unlock")
     public ResponseEntity<BaseResponse<UserResponseDTO>> unlockUser(@PathVariable Long id) {
         UserResponseDTO data = userService.unlockUser(id);
-        return ResponseEntity.ok(BaseResponse.success(data, "User unlocked successfully"));
+        return ResponseEntity.ok(BaseResponse.success(data, "Tài khoản đã được mở khóa thành công"));
     }
 }
 

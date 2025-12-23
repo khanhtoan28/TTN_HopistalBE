@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 /**
  * Base Response DTO cho tất cả API responses
  * @param <T> Data type
@@ -22,7 +20,6 @@ public class BaseResponse<T> {
     private boolean success;
     private String message;
     private T data;
-    private LocalDateTime timestamp;
     private String error;
     
     /**
@@ -32,7 +29,6 @@ public class BaseResponse<T> {
         return BaseResponse.<T>builder()
                 .success(true)
                 .data(data)
-                .timestamp(LocalDateTime.now())
                 .build();
     }
     
@@ -44,7 +40,6 @@ public class BaseResponse<T> {
                 .success(true)
                 .message(message)
                 .data(data)
-                .timestamp(LocalDateTime.now())
                 .build();
     }
     
@@ -55,7 +50,6 @@ public class BaseResponse<T> {
         return BaseResponse.<T>builder()
                 .success(false)
                 .error(error)
-                .timestamp(LocalDateTime.now())
                 .build();
     }
     
@@ -67,7 +61,6 @@ public class BaseResponse<T> {
                 .success(false)
                 .message(message)
                 .error(error)
-                .timestamp(LocalDateTime.now())
                 .build();
     }
 }

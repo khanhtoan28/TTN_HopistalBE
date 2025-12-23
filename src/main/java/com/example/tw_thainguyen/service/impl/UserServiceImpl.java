@@ -12,6 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 public class UserServiceImpl extends BaseServiceImpl<User, Long, UserCreateAccountDTO, UserUpdateDTO, UserResponseDTO> 
         implements UserService {
@@ -74,17 +76,17 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserCreateAccou
     public UserResponseDTO create(UserCreateAccountDTO createDTO) {
         // Kiểm tra username đã tồn tại
         if (userRepository.existsByUsername(createDTO.getUsername())) {
-            throw new ResourceAlreadyExistsException("User", "username", createDTO.getUsername());
+            throw new ResourceAlreadyExistsException("Người dùng", "tên đăng nhập", createDTO.getUsername());
         }
         
         // Kiểm tra email đã tồn tại
         if (createDTO.getEmail() != null && userRepository.existsByEmail(createDTO.getEmail())) {
-            throw new ResourceAlreadyExistsException("User", "email", createDTO.getEmail());
+            throw new ResourceAlreadyExistsException("Người dùng", "email", createDTO.getEmail());
         }
         
         // Kiểm tra phone đã tồn tại
         if (createDTO.getPhone() != null && userRepository.existsByPhone(createDTO.getPhone())) {
-            throw new ResourceAlreadyExistsException("User", "phone", createDTO.getPhone());
+            throw new ResourceAlreadyExistsException("Người dùng", "số điện thoại", createDTO.getPhone());
         }
         
         User user = toEntity(createDTO);
@@ -97,23 +99,24 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserCreateAccou
     @Transactional
     public UserResponseDTO update(Long id, UserUpdateDTO updateDTO) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
+                .orElseThrow(() -> new ResourceNotFoundException("Người dùng", "id", id));
         
         // Kiểm tra email đã tồn tại (nếu thay đổi)
         if (updateDTO.getEmail() != null && !updateDTO.getEmail().equals(user.getEmail())) {
             if (userRepository.existsByEmail(updateDTO.getEmail())) {
-                throw new ResourceAlreadyExistsException("User", "email", updateDTO.getEmail());
+                throw new ResourceAlreadyExistsException("Người dùng", "email", updateDTO.getEmail());
             }
         }
         
         // Kiểm tra phone đã tồn tại (nếu thay đổi)
         if (updateDTO.getPhone() != null && !updateDTO.getPhone().equals(user.getPhone())) {
             if (userRepository.existsByPhone(updateDTO.getPhone())) {
-                throw new ResourceAlreadyExistsException("User", "phone", updateDTO.getPhone());
+                throw new ResourceAlreadyExistsException("Người dùng", "số điện thoại", updateDTO.getPhone());
             }
         }
         
         updateEntity(user, updateDTO);
+        user.setUpdatedAt(LocalDateTime.now());
         User updatedUser = userRepository.save(user);
         return toResponseDTO(updatedUser);
     }
@@ -122,7 +125,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserCreateAccou
     @Transactional
     public void delete(Long id) {
         if (!userRepository.existsById(id)) {
-            throw new ResourceNotFoundException("User", "id", id);
+            throw new ResourceNotFoundException("Người dùng", "id", id);
         }
         userRepository.deleteById(id);
     }
@@ -131,8 +134,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserCreateAccou
     @Transactional
     public UserResponseDTO lockUser(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
+                .orElseThrow(() -> new ResourceNotFoundException("Người dùng", "id", id));
         user.setIsLocked(true);
+        user.setUpdatedAt(LocalDateTime.now());
         User updatedUser = userRepository.save(user);
         return toResponseDTO(updatedUser);
     }
@@ -141,8 +145,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserCreateAccou
     @Transactional
     public UserResponseDTO unlockUser(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
+                .orElseThrow(() -> new ResourceNotFoundException("Người dùng", "id", id));
         user.setIsLocked(false);
+        user.setUpdatedAt(LocalDateTime.now());
         User updatedUser = userRepository.save(user);
         return toResponseDTO(updatedUser);
     }

@@ -39,7 +39,7 @@ public abstract class BaseController<T, ID, CreateDTO, UpdateDTO, ResponseDTO> {
         return service.findById(id)
                 .map(data -> ResponseEntity.ok(BaseResponse.success(data)))
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(BaseResponse.error("Entity not found with id: " + id)));
+                        .body(BaseResponse.error("Không tìm thấy tài nguyên với id: " + id)));
     }
     
     /**
@@ -48,7 +48,7 @@ public abstract class BaseController<T, ID, CreateDTO, UpdateDTO, ResponseDTO> {
     protected ResponseEntity<BaseResponse<ResponseDTO>> create(@Valid CreateDTO createDTO) {
         ResponseDTO data = service.create(createDTO);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(BaseResponse.success(data, "Created successfully"));
+                .body(BaseResponse.success(data, "Tạo mới thành công"));
     }
     
     /**
@@ -56,7 +56,7 @@ public abstract class BaseController<T, ID, CreateDTO, UpdateDTO, ResponseDTO> {
      */
     protected ResponseEntity<BaseResponse<ResponseDTO>> update(ID id, @Valid UpdateDTO updateDTO) {
         ResponseDTO data = service.update(id, updateDTO);
-        return ResponseEntity.ok(BaseResponse.success(data, "Updated successfully"));
+        return ResponseEntity.ok(BaseResponse.success(data, "Cập nhật thành công"));
     }
     
     /**
@@ -64,7 +64,7 @@ public abstract class BaseController<T, ID, CreateDTO, UpdateDTO, ResponseDTO> {
      */
     protected ResponseEntity<BaseResponse<Void>> delete(ID id) {
         service.delete(id);
-        return ResponseEntity.ok(BaseResponse.success(null, "Deleted successfully"));
+        return ResponseEntity.ok(BaseResponse.success(null, "Xóa thành công"));
     }
 }
 
