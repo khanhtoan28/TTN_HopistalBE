@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/introductions")
+@RequestMapping("/api/v1/users/introductions")
 public class IntroductionController extends BaseController<Introduction, Long, IntroductionRequestDTO, IntroductionRequestDTO, IntroductionResponseDTO> {
 
     public IntroductionController(IntroductionService introductionService) {

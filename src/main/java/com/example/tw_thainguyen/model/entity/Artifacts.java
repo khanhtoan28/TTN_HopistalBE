@@ -24,4 +24,13 @@ public class Artifacts {
 
     @Column(name = "image_url", length = 500)
     private String imageUrl;
+
+    @Column(name = "period", length = 255)
+    private String period;
+
+    @Column(name = "type", length = 255)    
+    private String type;
+
+    @Column(name = "space", length = 255)
+    private String space;
 }

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/golden-book")
+@RequestMapping("/api/v1/users/golden-book")
 public class GoldenBookController extends BaseController<GoldenBook, Long, GoldenBookRequestDTO, GoldenBookRequestDTO, GoldenBookResponseDTO> {
 
     public GoldenBookController(GoldenBookService goldenBookService) {

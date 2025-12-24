@@ -12,11 +12,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/artifacts")
+@RequestMapping("/api/v1/users/artifacts")
 public class ArtifactsController extends BaseController<Artifacts, Long, ArtifactsRequestDTO, ArtifactsRequestDTO, ArtifactsResponseDTO> {
+
+    private final ArtifactsService artifactsService;
 
     public ArtifactsController(ArtifactsService artifactsService) {
         super(artifactsService);
+        this.artifactsService = artifactsService;
     }
 
     @GetMapping
@@ -42,6 +45,33 @@ public class ArtifactsController extends BaseController<Artifacts, Long, Artifac
     @DeleteMapping("/{id}")
     public ResponseEntity<BaseResponse<Void>> deleteArtifacts(@PathVariable Long id) {
         return super.delete(id);
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<BaseResponse<List<ArtifactsResponseDTO>>> filterArtifacts(
+            @RequestParam(required = false) String period,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String space) {
+        List<ArtifactsResponseDTO> artifacts = artifactsService.filterArtifacts(period, type, space);
+        return ResponseEntity.ok(BaseResponse.<List<ArtifactsResponseDTO>>success(artifacts, "Lọc danh sách hiện vật thành công"));
+    }
+
+    @GetMapping("/periods")
+    public ResponseEntity<BaseResponse<List<String>>> getAllPeriods() {
+        List<String> periods = artifactsService.getAllPeriods();
+        return ResponseEntity.ok(BaseResponse.<List<String>>success(periods, "Lấy danh sách thời kỳ thành công"));
+    }
+
+    @GetMapping("/types")
+    public ResponseEntity<BaseResponse<List<String>>> getAllTypes() {
+        List<String> types = artifactsService.getAllTypes();
+        return ResponseEntity.ok(BaseResponse.<List<String>>success(types, "Lấy danh sách loại hình thành công"));
+    }
+
+    @GetMapping("/spaces")
+    public ResponseEntity<BaseResponse<List<String>>> getAllSpaces() {
+        List<String> spaces = artifactsService.getAllSpaces();
+        return ResponseEntity.ok(BaseResponse.<List<String>>success(spaces, "Lấy danh sách không gian thành công"));
     }
 
 }

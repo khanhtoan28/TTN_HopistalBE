@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/histories")
+@RequestMapping("/api/v1/users/histories")
 public class HistoryController extends BaseController<History, Long, HistoryRequestDTO, HistoryRequestDTO, HistoryResponseDTO> {
 
     public HistoryController(HistoryService historyService) {
