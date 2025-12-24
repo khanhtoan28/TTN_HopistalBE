@@ -18,4 +18,13 @@ public class ArtifactsRequestDTO {
     private String description;
 
     private String imageUrl;
+
+    @Size(max = 255, message = "Thời kỳ không được vượt quá 255 kí tự")
+    private String period;
+
+    @Size(max = 255, message = "Loại hiện vật không được vượt quá 255 kí tự")
+    private String type;
+
+    @Size(max = 255, message = "Không gian không được vượt quá 255 kí tự")
+    private String space;
 }

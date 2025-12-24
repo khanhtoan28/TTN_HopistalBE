@@ -64,7 +64,7 @@ public abstract class BaseController<T, ID, CreateDTO, UpdateDTO, ResponseDTO> {
      */
     protected ResponseEntity<BaseResponse<Void>> delete(ID id) {
         service.delete(id);
-        return ResponseEntity.ok(BaseResponse.success(null, "Xóa thành công"));
+        return ResponseEntity.ok(BaseResponse.<Void>success(null, "Xóa thành công"));
     }
 }
 

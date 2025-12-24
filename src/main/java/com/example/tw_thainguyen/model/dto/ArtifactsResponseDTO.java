@@ -12,4 +12,7 @@ public class ArtifactsResponseDTO {
     private String artifactName;
     private String description;
     private String imageUrl;
+    private String period;
+    private String type;
+    private String space;
 }
