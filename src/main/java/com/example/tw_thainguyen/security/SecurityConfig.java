@@ -1,26 +1,28 @@
 package com.example.tw_thainguyen.security;
 
 
-import com.example.tw_thainguyen.security.jwt.JwtAuthTokenFilter;
-import com.example.tw_thainguyen.security.jwt.JwtEntryPoint;
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
-import java.util.List;
+import com.example.tw_thainguyen.security.jwt.JwtAuthTokenFilter;
+import com.example.tw_thainguyen.security.jwt.JwtEntryPoint;
 
 @Configuration
 @EnableWebSecurity
@@ -59,7 +61,14 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/public/**").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
+                        // Cho phép GET requests không cần xác thực để user có thể xem
+                        .requestMatchers(HttpMethod.GET, "/api/v1/golden-book", "/api/v1/golden-book/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/artifacts", "/api/v1/artifacts/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/histories", "/api/v1/histories/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/introductions", "/api/v1/introductions/**").permitAll()
+                        // Users endpoints vẫn cần xác thực
                         .requestMatchers("/api/v1/users/**").authenticated()
+                        // Tất cả các request khác (POST, PUT, DELETE) vẫn cần xác thực
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(auth -> auth.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
