@@ -1,18 +1,28 @@
 package com.example.tw_thainguyen.controller;
 
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.example.tw_thainguyen.model.dto.ArtifactsRequestDTO;
 import com.example.tw_thainguyen.model.dto.ArtifactsResponseDTO;
 import com.example.tw_thainguyen.model.dto.BaseResponse;
 import com.example.tw_thainguyen.model.entity.Artifacts;
 import com.example.tw_thainguyen.service.ArtifactsService;
-import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/v1/users/artifacts")
+@RequestMapping("/api/v1/artifacts")
 public class ArtifactsController extends BaseController<Artifacts, Long, ArtifactsRequestDTO, ArtifactsRequestDTO, ArtifactsResponseDTO> {
 
     private final ArtifactsService artifactsService;
