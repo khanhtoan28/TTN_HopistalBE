@@ -18,18 +18,23 @@ public class Image {
     @Column(name = "image_id", nullable = false)
     private Long imageId;
 
+    // Tên file được lưu trên Server
     @Column(name = "filename", nullable = false, length = 255)
     private String filename;
 
+    // Tên file gốc của người dùng
     @Column(name = "original_filename", nullable = false, length = 255)
     private String originalFilename;
 
+    // Đường dẫn tới file trên Server
     @Column(name = "file_path", nullable = false, length = 500)
     private String filePath;
 
+    // Kích thước của file
     @Column(name = "file_size", nullable = false)
     private Long fileSize;
 
+    // Loại media của file
     @Column(name = "content_type", length = 100)
     private String contentType;
 
