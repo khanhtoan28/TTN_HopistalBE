@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Base Service Implementation với các method CRUD cơ bản
@@ -48,7 +47,7 @@ public abstract class BaseServiceImpl<T, ID, CreateDTO, UpdateDTO, ResponseDTO>
         return repository.findAll()
                 .stream()
                 .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
     
     @Override

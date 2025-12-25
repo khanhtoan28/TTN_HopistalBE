@@ -66,6 +66,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/artifacts", "/api/v1/artifacts/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/histories", "/api/v1/histories/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/introductions", "/api/v1/introductions/**").permitAll()
+                        // Image endpoints - GET và download cho phép public (phải đặt trước các rule khác)
+                        .requestMatchers(HttpMethod.GET, "/api/v1/images", "/api/v1/images/**").permitAll()
+                        // Image upload/update/delete cần xác thực (phải đặt trước anyRequest)
+                        .requestMatchers(HttpMethod.POST, "/api/v1/images/upload", "/api/v1/images/upload/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/images/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/images/**").authenticated()
                         // Users endpoints vẫn cần xác thực
                         .requestMatchers("/api/v1/users/**").authenticated()
                         // Tất cả các request khác (POST, PUT, DELETE) vẫn cần xác thực

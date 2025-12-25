@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ArtifactsServiceImpl extends BaseServiceImpl<Artifacts, Long, ArtifactsRequestDTO, ArtifactsRequestDTO, ArtifactsResponseDTO> implements ArtifactsService {
@@ -109,6 +108,6 @@ public class ArtifactsServiceImpl extends BaseServiceImpl<Artifacts, Long, Artif
         List<Artifacts> artifacts = artifactsRepository.findByFilters(periodFilter, typeFilter, spaceFilter);
         return artifacts.stream()
                 .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 }
