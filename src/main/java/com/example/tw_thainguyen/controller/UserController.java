@@ -1,6 +1,7 @@
 package com.example.tw_thainguyen.controller;
 
 import com.example.tw_thainguyen.model.dto.BaseResponse;
+import com.example.tw_thainguyen.model.dto.PageResponse;
 import com.example.tw_thainguyen.model.dto.UserCreateAccountDTO;
 import com.example.tw_thainguyen.model.dto.UserResponseDTO;
 import com.example.tw_thainguyen.model.dto.UserUpdateDTO;
@@ -22,8 +23,20 @@ public class UserController extends BaseController<User, Long, UserCreateAccount
     }
     
     @GetMapping
-    public ResponseEntity<BaseResponse<java.util.List<UserResponseDTO>>> getAll() {
-        return super.getAll();
+    public ResponseEntity<?> getAll(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size,
+            @RequestParam(required = false, defaultValue = "userId") String sortBy,
+            @RequestParam(required = false, defaultValue = "DESC") String sortDir,
+            @RequestParam(required = false) String search) {
+        PageResponse<UserResponseDTO> pageResponse = userService.getAllUsers(page, size, sortBy, sortDir, search);
+        if (pageResponse == null) {
+            return super.getAll();
+        }
+        String message = (search != null && !search.trim().isEmpty()) 
+                ? "Tìm kiếm người dùng thành công" 
+                : "Lấy danh sách người dùng thành công";
+        return ResponseEntity.ok(BaseResponse.success(pageResponse, message));
     }
     
     @GetMapping("/{id}")
