@@ -2,18 +2,22 @@ package com.example.tw_thainguyen.service.impl;
 
 import com.example.tw_thainguyen.exception.ResourceAlreadyExistsException;
 import com.example.tw_thainguyen.exception.ResourceNotFoundException;
+import com.example.tw_thainguyen.model.dto.PageResponse;
 import com.example.tw_thainguyen.model.dto.UserCreateAccountDTO;
 import com.example.tw_thainguyen.model.dto.UserResponseDTO;
 import com.example.tw_thainguyen.model.dto.UserUpdateDTO;
 import com.example.tw_thainguyen.model.entity.User;
 import com.example.tw_thainguyen.repository.UserRepository;
 import com.example.tw_thainguyen.service.UserService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-
+    
 @Service
 public class UserServiceImpl extends BaseServiceImpl<User, Long, UserCreateAccountDTO, UserUpdateDTO, UserResponseDTO>
         implements UserService {
@@ -150,6 +154,71 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserCreateAccou
         user.setUpdatedAt(LocalDateTime.now());
         User updatedUser = userRepository.save(user);
         return toResponseDTO(updatedUser);
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public PageResponse<UserResponseDTO> findAllPaginated(Pageable pageable) {
+        org.springframework.data.domain.Page<UserResponseDTO> page = super.findAll(pageable);
+        return PageResponse.from(page);
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public PageResponse<UserResponseDTO> searchUsers(String keyword, Pageable pageable) {
+        org.springframework.data.domain.Page<User> userPage = userRepository.searchUsers(keyword, pageable);
+        org.springframework.data.domain.Page<UserResponseDTO> dtoPage = userPage.map(this::toResponseDTO);
+        return PageResponse.from(dtoPage);
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public PageResponse<UserResponseDTO> getAllUsers(Integer page, Integer size, String sortBy, String sortDir, String search) {
+        // Nếu không có tham số phân trang, trả về null để controller xử lý lấy tất cả
+        if (page == null && size == null) {
+            return null;
+        }
+        
+        // Validate và normalize page
+        int pageNumber = page != null ? page : 0;
+        if (pageNumber < 0) {
+            pageNumber = 0;
+        }
+        
+        // Validate và normalize size
+        int pageSize = size != null ? size : 10;
+        if (pageSize < 1) {
+            pageSize = 10;
+        }
+        if (pageSize > 100) {
+            pageSize = 100; // Giới hạn tối đa 100 items mỗi trang
+        }
+        
+        // Validate và normalize sortBy
+        if (sortBy == null || sortBy.trim().isEmpty()) {
+            sortBy = "userId";
+        }
+        
+        // Validate và normalize sortDir
+        if (sortDir == null || sortDir.trim().isEmpty()) {
+            sortDir = "ASC";
+        }
+        sortDir = sortDir.toUpperCase();
+        if (!sortDir.equals("ASC") && !sortDir.equals("DESC")) {
+            sortDir = "ASC";
+        }
+        
+        // Tạo Sort object
+        Sort.Direction direction = Sort.Direction.fromString(sortDir);
+        Sort sort = Sort.by(direction, sortBy);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+        
+        // Xử lý tìm kiếm hoặc lấy tất cả
+        if (search != null && !search.trim().isEmpty()) {
+            return searchUsers(search.trim(), pageable);
+        } else {
+            return findAllPaginated(pageable);
+        }
     }
 }
 
