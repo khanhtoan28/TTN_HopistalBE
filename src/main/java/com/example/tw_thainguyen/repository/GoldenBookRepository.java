@@ -4,6 +4,7 @@ import com.example.tw_thainguyen.model.entity.GoldenBook;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface GoldenBookRepository extends BaseRepository<GoldenBook, Long> {
 
@@ -12,7 +13,10 @@ public interface GoldenBookRepository extends BaseRepository<GoldenBook, Long> {
      * Tìm kiếm không phân biệt hoa thường
      */
     @Query("SELECT a FROM GoldenBook a WHERE " +
-           "(:name IS NULL OR :name = '' OR LOWER(a.goldenBookName) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
-           "(:level IS NULL OR :level = '' OR LOWER(a.level) LIKE LOWER(CONCAT('%', :level, '%')))")
-    Page<GoldenBook> findByGoldenBookAndLevelContainingIgnoreCase(String name, String level, Pageable pageable);
+            "(:keyword IS NULL OR :keyword = '' OR " +
+           "LOWER(a.goldenBookName) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND " +
+           "LOWER(a.level) LIKE LOWER(CONCAT('%', :keyword, '%')) AND " +
+            "LOWER(a.department) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    Page<GoldenBook> searchGoldenBook (@Param("keyword") String keyword, Pageable pageable);
+
 }
