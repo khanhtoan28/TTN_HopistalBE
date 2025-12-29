@@ -2,12 +2,15 @@ package com.example.tw_thainguyen.service;
 
 import com.example.tw_thainguyen.model.dto.ArtifactsRequestDTO;
 import com.example.tw_thainguyen.model.dto.ArtifactsResponseDTO;
+import com.example.tw_thainguyen.model.dto.PageResponse;
 import com.example.tw_thainguyen.model.entity.Artifacts;
+import org.hibernate.query.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface ArtifactsService extends BaseService<Artifacts, Long, ArtifactsRequestDTO, ArtifactsRequestDTO, ArtifactsResponseDTO> {
-    
+
     /**
      * Lấy danh sách các giá trị period duy nhất
      */

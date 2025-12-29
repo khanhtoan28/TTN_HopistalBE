@@ -1,13 +1,11 @@
 package com.example.tw_thainguyen.service.impl;
 
-import com.example.tw_thainguyen.exception.ResourceNotFoundException;
 import com.example.tw_thainguyen.model.dto.HistoryRequestDTO;
 import com.example.tw_thainguyen.model.dto.HistoryResponseDTO;
 import com.example.tw_thainguyen.model.entity.History;
 import com.example.tw_thainguyen.repository.HistoryRepository;
 import com.example.tw_thainguyen.service.HistoryService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class HistoryServiceImpl extends BaseServiceImpl<History, Long, HistoryRequestDTO, HistoryRequestDTO, HistoryResponseDTO>
@@ -62,16 +60,5 @@ public class HistoryServiceImpl extends BaseServiceImpl<History, Long, HistoryRe
         if (historyRequestDTO.getImage() != null) {
             entity.setImage(historyRequestDTO.getImage());
         }
-    }
-    
-    @Override
-    @Transactional
-    public HistoryResponseDTO update(Long id, HistoryRequestDTO requestDTO) {
-        History history = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Lịch sử", "id", id));
-        
-        updateEntity(history, requestDTO);
-        History updatedHistory = repository.save(history);
-        return toResponseDTO(updatedHistory);
     }
 }

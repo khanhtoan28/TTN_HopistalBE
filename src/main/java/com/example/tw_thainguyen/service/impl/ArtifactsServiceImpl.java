@@ -1,6 +1,5 @@
 package com.example.tw_thainguyen.service.impl;
 
-import com.example.tw_thainguyen.exception.ResourceNotFoundException;
 import com.example.tw_thainguyen.model.dto.ArtifactsRequestDTO;
 import com.example.tw_thainguyen.model.dto.ArtifactsResponseDTO;
 import com.example.tw_thainguyen.model.entity.Artifacts;
@@ -69,17 +68,6 @@ public class ArtifactsServiceImpl extends BaseServiceImpl<Artifacts, Long, Artif
     }
 
     @Override
-    @Transactional
-    public ArtifactsResponseDTO update(Long id, ArtifactsRequestDTO requestDTO) {
-        Artifacts artifact = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Hiện vật", "id", id));
-
-        updateEntity(artifact, requestDTO);
-        Artifacts updatedArtifact = repository.save(artifact);
-        return toResponseDTO(updatedArtifact);
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public List<String> getAllPeriods() {
         return artifactsRepository.findDistinctPeriods();
@@ -100,14 +88,15 @@ public class ArtifactsServiceImpl extends BaseServiceImpl<Artifacts, Long, Artif
     @Override
     @Transactional(readOnly = true)
     public List<ArtifactsResponseDTO> filterArtifacts(String period, String type, String space) {
-        // Chuẩn hóa các giá trị null/empty
-        String periodFilter = (period != null && !period.trim().isEmpty()) ? period : null;
-        String typeFilter = (type != null && !type.trim().isEmpty()) ? type : null;
-        String spaceFilter = (space != null && !space.trim().isEmpty()) ? space : null;
-
-        List<Artifacts> artifacts = artifactsRepository.findByFilters(periodFilter, typeFilter, spaceFilter);
-        return artifacts.stream()
-                .map(this::toResponseDTO)
-                .toList();
+        List<Artifacts> artifacts = artifactsRepository.findByFilters(
+                normalizeString(period), 
+                normalizeString(type), 
+                normalizeString(space)
+        );
+        return artifacts.stream().map(this::toResponseDTO).toList();
+    }
+    
+    private String normalizeString(String value) {
+        return (value != null && !value.trim().isEmpty()) ? value : null;
     }
 }

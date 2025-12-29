@@ -1,15 +1,11 @@
 package com.example.tw_thainguyen.service.impl;
 
-import com.example.tw_thainguyen.exception.ResourceNotFoundException;
 import com.example.tw_thainguyen.model.dto.IntroductionRequestDTO;
 import com.example.tw_thainguyen.model.dto.IntroductionResponseDTO;
 import com.example.tw_thainguyen.model.entity.Introduction;
 import com.example.tw_thainguyen.repository.IntroductionRepository;
 import com.example.tw_thainguyen.service.IntroductionService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 @Service
 public class IntroductionServiceImpl extends BaseServiceImpl<Introduction, Long, IntroductionRequestDTO, IntroductionRequestDTO, IntroductionResponseDTO>
@@ -46,17 +42,5 @@ public class IntroductionServiceImpl extends BaseServiceImpl<Introduction, Long,
         if (requestDTO.getContent() != null) {
             introduction.setContent(requestDTO.getContent());
         }
-    }
-
-    @Override
-    @Transactional
-    public IntroductionResponseDTO update(Long id, IntroductionRequestDTO requestDTO) {
-        Introduction introduction = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Giới thiệu", "id", id));
-
-        updateEntity(introduction, requestDTO);
-        introduction.setUpdatedAt(LocalDateTime.now());
-        Introduction updatedIntroduction = repository.save(introduction);
-        return toResponseDTO(updatedIntroduction);
     }
 }
