@@ -1,24 +1,31 @@
 package com.example.tw_thainguyen.controller;
 
-import com.example.tw_thainguyen.model.dto.BaseResponse;
-import com.example.tw_thainguyen.model.dto.GoldenBookResponseDTO;
-import com.example.tw_thainguyen.model.dto.ImageResponseDTO;
-import com.example.tw_thainguyen.model.dto.PageResponse;
-import com.example.tw_thainguyen.service.ImageService;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Optional;
+import com.example.tw_thainguyen.model.dto.BaseResponse;
+import com.example.tw_thainguyen.model.dto.ImageResponseDTO;
+import com.example.tw_thainguyen.model.dto.PageResponse;
+import com.example.tw_thainguyen.service.ImageService;
 
 @RestController
 @RequestMapping("/api/v1/images")
@@ -113,14 +120,24 @@ public class ImageController {
             @RequestParam(required = false, defaultValue = "imageId") String sortBy,
             @RequestParam(required = false, defaultValue = "ASC") String sortDir,
             @RequestParam(required = false) String search) {
+        // Nếu không truyền page và size, trả về toàn bộ danh sách ảnh (không phân trang)
+        if (page == null && size == null) {
+            List<ImageResponseDTO> images = imageService.getAllImages();
+            String message = (search != null && !search.trim().isEmpty())
+                ? "Tìm kiếm hình ảnh thành công"
+                : "Lấy danh sách hình ảnh thành công";
+            return ResponseEntity.ok(BaseResponse.<List<ImageResponseDTO>>success(images, message));
+        }
+
         PageResponse<ImageResponseDTO> pageResponse = imageService.getAllImagesPaginated(page, size, sortBy, sortDir, search);
         if (pageResponse == null) {
             return ResponseEntity.badRequest()
-                    .body(BaseResponse.error("Không tìm thấy dữ liệu ảnh"));
+                .body(BaseResponse.error("Không tìm thấy dữ liệu ảnh"));
         }
+
         String message = (search != null && !search.trim().isEmpty())
-                ? "Tìm kiếm hình ảnh thành công"
-                : "Lấy danh sách hình ảnh thành công";
+            ? "Tìm kiếm hình ảnh thành công"
+            : "Lấy danh sách hình ảnh thành công";
         return ResponseEntity.ok(BaseResponse.success(pageResponse, message));
     }
 }
