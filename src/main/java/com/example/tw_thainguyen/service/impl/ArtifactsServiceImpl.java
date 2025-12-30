@@ -6,6 +6,7 @@ import com.example.tw_thainguyen.model.dto.PageResponse;
 import com.example.tw_thainguyen.model.entity.Artifacts;
 import com.example.tw_thainguyen.repository.ArtifactsRepository;
 import com.example.tw_thainguyen.service.ArtifactsService;
+import com.example.tw_thainguyen.service.ImageService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,15 +15,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ArtifactsServiceImpl extends BaseServiceImpl<Artifacts, Long, ArtifactsRequestDTO, ArtifactsRequestDTO, ArtifactsResponseDTO> implements ArtifactsService {
 
     private final ArtifactsRepository artifactsRepository;
+    private final ImageService imageService;
 
-    public ArtifactsServiceImpl(ArtifactsRepository artifactsRepository) {
+    public ArtifactsServiceImpl(ArtifactsRepository artifactsRepository, ImageService imageService) {
         super(artifactsRepository);
         this.artifactsRepository = artifactsRepository;
+        this.imageService = imageService;
     }
 
     @Override
@@ -40,10 +44,11 @@ public class ArtifactsServiceImpl extends BaseServiceImpl<Artifacts, Long, Artif
 
     @Override
     protected Artifacts toEntity(ArtifactsRequestDTO artifactsRequestDTO) {
+        String imageUrl = resolveImageUrl(artifactsRequestDTO.getImageId(), artifactsRequestDTO.getImageUrl());
         return Artifacts.builder()
                 .artifactName(artifactsRequestDTO.getName())
                 .description(artifactsRequestDTO.getDescription())
-                .imageUrl(artifactsRequestDTO.getImageUrl())
+                .imageUrl(imageUrl)
                 .period(artifactsRequestDTO.getPeriod())
                 .type(artifactsRequestDTO.getType())
                 .space(artifactsRequestDTO.getSpace())
@@ -58,8 +63,9 @@ public class ArtifactsServiceImpl extends BaseServiceImpl<Artifacts, Long, Artif
         if (artifactsRequestDTO.getDescription() != null) {
             entity.setDescription(artifactsRequestDTO.getDescription());
         }
-        if (artifactsRequestDTO.getImageUrl() != null) {
-            entity.setImageUrl(artifactsRequestDTO.getImageUrl());
+        String imageUrl = resolveImageUrl(artifactsRequestDTO.getImageId(), artifactsRequestDTO.getImageUrl());
+        if (imageUrl != null) {
+            entity.setImageUrl(imageUrl);
         }
         if (artifactsRequestDTO.getPeriod() != null) {
             entity.setPeriod(artifactsRequestDTO.getPeriod());
@@ -70,6 +76,18 @@ public class ArtifactsServiceImpl extends BaseServiceImpl<Artifacts, Long, Artif
         if (artifactsRequestDTO.getSpace() != null) {
             entity.setSpace(artifactsRequestDTO.getSpace());
         }
+    }
+
+    /**
+     * Resolve image URL from imageId or use provided imageUrl
+     */
+    private String resolveImageUrl(Long imageId, String imageUrl) {
+        if (imageId != null && (imageUrl == null || imageUrl.trim().isEmpty())) {
+            return imageService.getImageById(imageId)
+                    .map(img -> img.getUrl())
+                    .orElse(null);
+        }
+        return imageUrl;
     }
 
     @Override

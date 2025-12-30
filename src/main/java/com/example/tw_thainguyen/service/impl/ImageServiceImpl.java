@@ -1,7 +1,6 @@
 package com.example.tw_thainguyen.service.impl;
 
 import com.example.tw_thainguyen.exception.ResourceNotFoundException;
-import com.example.tw_thainguyen.model.dto.HistoryResponseDTO;
 import com.example.tw_thainguyen.model.dto.ImageResponseDTO;
 import com.example.tw_thainguyen.model.dto.PageResponse;
 import com.example.tw_thainguyen.model.entity.Image;

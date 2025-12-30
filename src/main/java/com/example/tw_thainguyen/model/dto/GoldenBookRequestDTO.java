@@ -29,6 +29,8 @@ public class GoldenBookRequestDTO {
 
     @Size(max = 255, message = "URL hình ảnh không được vượt quá 255 kí tự")
     private String image;
+    
+    private Long imageId;
 
     @Size(max = 500, message = "Mô tả không được vượt quá 500 kí tự")
     private String description;

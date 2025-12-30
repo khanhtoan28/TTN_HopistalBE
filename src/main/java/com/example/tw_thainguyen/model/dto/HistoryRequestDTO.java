@@ -29,6 +29,10 @@ public class HistoryRequestDTO {
     @Size(max = 255, message = "URL icon không được vượt quá 255 kí tự")
     private String icon;
 
+    private Long iconImageId;
+
     @Size(max = 255, message = "URL hình ảnh không được vượt quá 255 kí tự")
     private String image;
+    
+    private Long imageId;
 }

@@ -6,6 +6,7 @@ import com.example.tw_thainguyen.model.dto.PageResponse;
 import com.example.tw_thainguyen.model.entity.History;
 import com.example.tw_thainguyen.repository.HistoryRepository;
 import com.example.tw_thainguyen.service.HistoryService;
+import com.example.tw_thainguyen.service.ImageService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,10 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class HistoryServiceImpl extends BaseServiceImpl<History, Long, HistoryRequestDTO, HistoryRequestDTO, HistoryResponseDTO>
         implements HistoryService {
     private final HistoryRepository historyRepository;
+    private final ImageService imageService;
 
-    public HistoryServiceImpl(HistoryRepository historyRepository) {
+    public HistoryServiceImpl(HistoryRepository historyRepository, ImageService imageService) {
         super(historyRepository);
         this.historyRepository = historyRepository;
+        this.imageService = imageService;
     }
 
     @Override
@@ -38,13 +41,15 @@ public class HistoryServiceImpl extends BaseServiceImpl<History, Long, HistoryRe
 
     @Override
     protected History toEntity(HistoryRequestDTO historyRequestDTO) {
+        String icon = resolveImageUrl(historyRequestDTO.getIconImageId(), historyRequestDTO.getIcon());
+        String image = resolveImageUrl(historyRequestDTO.getImageId(), historyRequestDTO.getImage());
         return History.builder()
                 .period(historyRequestDTO.getPeriod())
                 .title(historyRequestDTO.getTitle())
                 .year(historyRequestDTO.getYear())
                 .description(historyRequestDTO.getDescription())
-                .icon(historyRequestDTO.getIcon())
-                .image(historyRequestDTO.getImage())
+                .icon(icon)
+                .image(image)
                 .build();
     }
 
@@ -62,12 +67,26 @@ public class HistoryServiceImpl extends BaseServiceImpl<History, Long, HistoryRe
         if (historyRequestDTO.getDescription() != null) {
             entity.setDescription(historyRequestDTO.getDescription());
         }
-        if (historyRequestDTO.getIcon() != null) {
-            entity.setIcon(historyRequestDTO.getIcon());
+        String icon = resolveImageUrl(historyRequestDTO.getIconImageId(), historyRequestDTO.getIcon());
+        if (icon != null) {
+            entity.setIcon(icon);
         }
-        if (historyRequestDTO.getImage() != null) {
-            entity.setImage(historyRequestDTO.getImage());
+        String image = resolveImageUrl(historyRequestDTO.getImageId(), historyRequestDTO.getImage());
+        if (image != null) {
+            entity.setImage(image);
         }
+    }
+
+    /**
+     * Resolve image URL from imageId or use provided imageUrl
+     */
+    private String resolveImageUrl(Long imageId, String imageUrl) {
+        if (imageId != null && (imageUrl == null || imageUrl.trim().isEmpty())) {
+            return imageService.getImageById(imageId)
+                    .map(img -> img.getUrl())
+                    .orElse(null);
+        }
+        return imageUrl;
     }
 
     @Override
