@@ -1,7 +1,9 @@
 package com.example.tw_thainguyen.service;
 
 import com.example.tw_thainguyen.model.dto.ImageResponseDTO;
+import com.example.tw_thainguyen.model.dto.PageResponse;
 import com.example.tw_thainguyen.model.entity.Image;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -48,4 +50,7 @@ public interface ImageService {
      * Thay thế ảnh (upload file mới thay thế file cũ)
      */
     ImageResponseDTO replaceImage(Long id, MultipartFile newFile);
+
+    PageResponse<ImageResponseDTO> searchImages(String keyword, Pageable pageable);
+    PageResponse<ImageResponseDTO> getAllImagesPaginated(Integer page, Integer size, String sortBy, String sortDir, String search);
 }

@@ -1,7 +1,9 @@
 package com.example.tw_thainguyen.controller;
 
 import com.example.tw_thainguyen.model.dto.BaseResponse;
+import com.example.tw_thainguyen.model.dto.GoldenBookResponseDTO;
 import com.example.tw_thainguyen.model.dto.ImageResponseDTO;
+import com.example.tw_thainguyen.model.dto.PageResponse;
 import com.example.tw_thainguyen.service.ImageService;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -44,12 +46,6 @@ public class ImageController {
         List<ImageResponseDTO> images = imageService.uploadMultipleImages(files, description);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(BaseResponse.<List<ImageResponseDTO>>success(images, "Upload " + images.size() + " ảnh thành công"));
-    }
-
-    @GetMapping
-    public ResponseEntity<BaseResponse<List<ImageResponseDTO>>> getAllImages() {
-        List<ImageResponseDTO> images = imageService.getAllImages();
-        return ResponseEntity.ok(BaseResponse.<List<ImageResponseDTO>>success(images, "Lấy danh sách ảnh thành công"));
     }
 
     @GetMapping("/{id}")
@@ -108,5 +104,23 @@ public class ImageController {
     public ResponseEntity<BaseResponse<Void>> deleteImage(@PathVariable Long id) {
         imageService.deleteImage(id);
         return ResponseEntity.ok(BaseResponse.<Void>success(null, "Xóa ảnh thành công"));
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getPageAllImage(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size,
+            @RequestParam(required = false, defaultValue = "imageId") String sortBy,
+            @RequestParam(required = false, defaultValue = "ASC") String sortDir,
+            @RequestParam(required = false) String search) {
+        PageResponse<ImageResponseDTO> pageResponse = imageService.getAllImagesPaginated(page, size, sortBy, sortDir, search);
+        if (pageResponse == null) {
+            return ResponseEntity.badRequest()
+                    .body(BaseResponse.error("Không tìm thấy dữ liệu ảnh"));
+        }
+        String message = (search != null && !search.trim().isEmpty())
+                ? "Tìm kiếm hình ảnh thành công"
+                : "Lấy danh sách hình ảnh thành công";
+        return ResponseEntity.ok(BaseResponse.success(pageResponse, message));
     }
 }

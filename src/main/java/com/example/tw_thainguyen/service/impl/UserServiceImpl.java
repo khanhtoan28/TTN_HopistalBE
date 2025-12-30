@@ -127,33 +127,25 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserCreateAccou
 
     @Override
     @Transactional
-    public void delete(Long id) {
-        if (!userRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Người dùng", "id", id);
-        }
-        userRepository.deleteById(id);
-    }
-
-    @Override
-    @Transactional
     public UserResponseDTO lockUser(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Người dùng", "id", id));
-        user.setIsLocked(true);
-        user.setUpdatedAt(LocalDateTime.now());
-        User updatedUser = userRepository.save(user);
-        return toResponseDTO(updatedUser);
+        return toggleUserLockStatus(id, true);
     }
 
     @Override
     @Transactional
     public UserResponseDTO unlockUser(Long id) {
+        return toggleUserLockStatus(id, false);
+    }
+    
+    /**
+     * Toggle user lock status
+     */
+    private UserResponseDTO toggleUserLockStatus(Long id, boolean isLocked) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Người dùng", "id", id));
-        user.setIsLocked(false);
+        user.setIsLocked(isLocked);
         user.setUpdatedAt(LocalDateTime.now());
-        User updatedUser = userRepository.save(user);
-        return toResponseDTO(updatedUser);
+        return toResponseDTO(userRepository.save(user));
     }
     
     @Override
@@ -174,51 +166,29 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserCreateAccou
     @Override
     @Transactional(readOnly = true)
     public PageResponse<UserResponseDTO> getAllUsers(Integer page, Integer size, String sortBy, String sortDir, String search) {
-        // Nếu không có tham số phân trang, trả về null để controller xử lý lấy tất cả
         if (page == null && size == null) {
             return null;
         }
         
-        // Validate và normalize page
-        int pageNumber = page != null ? page : 0;
-        if (pageNumber < 0) {
-            pageNumber = 0;
-        }
+        int pageNumber = Math.max(0, page != null ? page : 0);
+        int pageSize = size != null ? Math.min(Math.max(1, size), 100) : 10;
+        String normalizedSortBy = (sortBy == null || sortBy.trim().isEmpty()) ? "userId" : sortBy;
+        String normalizedSortDir = normalizeSortDir(sortDir);
         
-        // Validate và normalize size
-        int pageSize = size != null ? size : 10;
-        if (pageSize < 1) {
-            pageSize = 10;
-        }
-        if (pageSize > 100) {
-            pageSize = 100; // Giới hạn tối đa 100 items mỗi trang
-        }
-        
-        // Validate và normalize sortBy
-        if (sortBy == null || sortBy.trim().isEmpty()) {
-            sortBy = "userId";
-        }
-        
-        // Validate và normalize sortDir
-        if (sortDir == null || sortDir.trim().isEmpty()) {
-            sortDir = "ASC";
-        }
-        sortDir = sortDir.toUpperCase();
-        if (!sortDir.equals("ASC") && !sortDir.equals("DESC")) {
-            sortDir = "ASC";
-        }
-        
-        // Tạo Sort object
-        Sort.Direction direction = Sort.Direction.fromString(sortDir);
-        Sort sort = Sort.by(direction, sortBy);
+        Sort sort = Sort.by(Sort.Direction.fromString(normalizedSortDir), normalizedSortBy);
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
         
-        // Xử lý tìm kiếm hoặc lấy tất cả
-        if (search != null && !search.trim().isEmpty()) {
-            return searchUsers(search.trim(), pageable);
-        } else {
-            return findAllPaginated(pageable);
+        return (search != null && !search.trim().isEmpty()) 
+                ? searchUsers(search.trim(), pageable) 
+                : findAllPaginated(pageable);
+    }
+    
+    private String normalizeSortDir(String sortDir) {
+        if (sortDir == null || sortDir.trim().isEmpty()) {
+            return "ASC";
         }
+        String upper = sortDir.toUpperCase();
+        return (upper.equals("ASC") || upper.equals("DESC")) ? upper : "ASC";
     }
 }
 

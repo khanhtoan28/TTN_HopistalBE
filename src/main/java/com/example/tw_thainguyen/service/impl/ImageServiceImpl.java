@@ -2,12 +2,17 @@ package com.example.tw_thainguyen.service.impl;
 
 import com.example.tw_thainguyen.exception.ResourceNotFoundException;
 import com.example.tw_thainguyen.model.dto.ImageResponseDTO;
+import com.example.tw_thainguyen.model.dto.PageResponse;
 import com.example.tw_thainguyen.model.entity.Image;
 import com.example.tw_thainguyen.repository.ImageRepository;
 import com.example.tw_thainguyen.service.ImageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -190,6 +195,47 @@ public class ImageServiceImpl implements ImageService {
             logger.error("Lỗi khi thay thế file với id {}: {}", id, e.getMessage(), e);
             throw new RuntimeException("Lỗi khi thay thế file: " + e.getMessage(), e);
         }
+    }
+
+    @Override
+    public PageResponse<ImageResponseDTO> searchImages(String keyword, Pageable pageable) {
+        Page<Image> page = imageRepository.searchImage(keyword, pageable);
+        Page<ImageResponseDTO> dtoPage = page.map(this::toResponseDTO);
+        return PageResponse.from(dtoPage);
+    }
+
+    @Transactional(readOnly = true)
+    protected PageResponse<ImageResponseDTO> findAllPaginated(Pageable pageable) {
+        Page<Image> page = imageRepository.findAll(pageable);
+        Page<ImageResponseDTO> dtoPage = page.map(this::toResponseDTO);
+        return PageResponse.from(dtoPage);
+    }
+
+
+    private String normalizeSortDir(String sortDir) {
+        if (sortDir == null || sortDir.trim().isEmpty()) {
+            return "ASC";
+        }
+        String upper = sortDir.toUpperCase();
+        return (upper.equals("ASC") || upper.equals("DESC")) ? upper : "ASC";
+    }
+    @Override
+    public PageResponse<ImageResponseDTO> getAllImagesPaginated(Integer page, Integer size, String sortBy, String sortDir, String search) {
+        if (page == null && size == null) {
+            return null;
+        }
+
+        int pageNumber = Math.max(0, page != null ? page : 0);
+        int pageSize = size != null ? Math.min(Math.max(1, size), 100) : 10;
+        String normalizedSortBy = (sortBy == null || sortBy.trim().isEmpty()) ? "imageId" : sortBy;
+        String normalizedSortDir = normalizeSortDir(sortDir);
+
+        Sort sort = Sort.by(Sort.Direction.fromString(normalizedSortDir), normalizedSortBy);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+
+        return (search != null && !search.trim().isEmpty())
+                ? searchImages(search.trim(), pageable)
+                : findAllPaginated(pageable);
     }
 
     /**

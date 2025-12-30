@@ -1,7 +1,10 @@
 package com.example.tw_thainguyen.repository;
 
 import com.example.tw_thainguyen.model.entity.Artifacts;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -24,4 +27,15 @@ public interface ArtifactsRepository extends BaseRepository<Artifacts, Long> {
            "(:type IS NULL OR :type = '' OR a.type = :type) AND " +
            "(:space IS NULL OR :space = '' OR a.space = :space)")
     List<Artifacts> findByFilters(String period, String type, String space);
+
+    /**
+     * Tìm kiếm artifacts theo keyword (tên và mô tả)
+     * Tìm kiếm không phân biệt hoa thường
+     */
+    @Query("SELECT a FROM Artifacts a WHERE " +
+           "(:keyword IS NULL OR :keyword = '' OR " +
+           "LOWER(a.artifactName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+           "LOWER(a.description) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(a.type) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+    Page<Artifacts> searchArtifacts(@Param("keyword") String keyword, Pageable pageable);
 }

@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.example.tw_thainguyen.model.dto.ArtifactsRequestDTO;
 import com.example.tw_thainguyen.model.dto.ArtifactsResponseDTO;
 import com.example.tw_thainguyen.model.dto.BaseResponse;
+import com.example.tw_thainguyen.model.dto.PageResponse;
 import com.example.tw_thainguyen.model.entity.Artifacts;
 import com.example.tw_thainguyen.service.ArtifactsService;
 
@@ -33,8 +33,20 @@ public class ArtifactsController extends BaseController<Artifacts, Long, Artifac
     }
 
     @GetMapping
-    public ResponseEntity<BaseResponse<List<ArtifactsResponseDTO>>> getAllArtifacts() {
-        return super.getAll();
+    public ResponseEntity<?> getAllArtifacts(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size,
+            @RequestParam(required = false, defaultValue = "artifactId") String sortBy,
+            @RequestParam(required = false, defaultValue = "ASC") String sortDir,
+            @RequestParam(required = false) String search) {
+        PageResponse<ArtifactsResponseDTO> pageResponse = artifactsService.getAllArtifacts(page, size, sortBy, sortDir, search);
+        if (pageResponse == null) {
+            return super.getAll();
+        }
+        String message = (search != null && !search.trim().isEmpty()) 
+                ? "Tìm kiếm hiện vật thành công" 
+                : "Lấy danh sách hiện vật thành công";
+        return ResponseEntity.ok(BaseResponse.success(pageResponse, message));
     }
 
     @GetMapping("/{id}")

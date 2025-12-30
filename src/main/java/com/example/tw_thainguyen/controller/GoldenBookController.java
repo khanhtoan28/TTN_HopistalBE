@@ -2,19 +2,10 @@ package com.example.tw_thainguyen.controller;
 
 import java.util.List;
 
+import com.example.tw_thainguyen.model.dto.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.example.tw_thainguyen.model.dto.BaseResponse;
-import com.example.tw_thainguyen.model.dto.GoldenBookRequestDTO;
-import com.example.tw_thainguyen.model.dto.GoldenBookResponseDTO;
 import com.example.tw_thainguyen.model.entity.GoldenBook;
 import com.example.tw_thainguyen.service.GoldenBookService;
 
@@ -24,15 +15,11 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/v1/golden-book")
 public class GoldenBookController extends BaseController<GoldenBook, Long, GoldenBookRequestDTO, GoldenBookRequestDTO, GoldenBookResponseDTO> {
 
+    private final GoldenBookService goldenBookService;
     public GoldenBookController(GoldenBookService goldenBookService) {
         super(goldenBookService);
+        this.goldenBookService = goldenBookService;
     }
-
-    @GetMapping
-    public ResponseEntity<BaseResponse<List<GoldenBookResponseDTO>>> getAllGoldenBooks() {
-        return super.getAll();
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<BaseResponse<GoldenBookResponseDTO>> getGoldenBookById(@PathVariable Long id) {
         return super.getById(id);
@@ -52,4 +39,22 @@ public class GoldenBookController extends BaseController<GoldenBook, Long, Golde
     public ResponseEntity<BaseResponse<Void>> deleteGoldenBook(@PathVariable Long id) {
         return super.delete(id);
     }
+
+    @GetMapping
+    public ResponseEntity<?> getPageAllGoldenBook(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size,
+            @RequestParam(required = false, defaultValue = "goldenBookId") String sortBy,
+            @RequestParam(required = false, defaultValue = "ASC") String sortDir,
+            @RequestParam(required = false) String search) {
+        PageResponse<GoldenBookResponseDTO> pageResponse = goldenBookService.getAllGoldenBook(page, size, sortBy, sortDir, search);
+        if (pageResponse == null) {
+            return super.getAll();
+        }
+        String message = (search != null && !search.trim().isEmpty())
+                ? "Tìm kiếm sổ vàng thành công"
+                : "Lấy danh sách sổ vàng thành công";
+        return ResponseEntity.ok(BaseResponse.success(pageResponse, message));
+    }
 }
+
